@@ -1,41 +1,87 @@
 // script.js
 
-const cells = document.querySelectorAll('[data-cell]');
-const restartBtn = document.getElementById('restartButton');
-let xTurn = true;
+// Gameboard Module
+const Gameboard = (() => {
+  const board = Array(9).fill(null);
 
-// Game board array: index 0-8 for 3x3 grid
-let gameBoard = Array(9).fill(null);
+  const getBoard = () => [...board];
 
-function handleClick(e) {
-  const cell = e.target;
-  const index = Array.from(cells).indexOf(cell);
+  const setCell = (index, mark) => {
+    if (!board[index]) {
+      board[index] = mark;
+      return true;
+    }
+    return false;
+  };
 
-  // Don't allow override
-  if (gameBoard[index]) return;
+  const reset = () => {
+    for (let i = 0; i < board.length; i++) board[i] = null;
+  };
 
-  const mark = xTurn ? 'X' : 'O';
+  return { getBoard, setCell, reset };
+})();
 
-  // Update DOM
-  cell.textContent = mark;
-  cell.classList.add(mark.toLowerCase());
+// Player Factory
+const Player = (name, mark) => {
+  return { name, mark };
+};
 
-  // Update board state
-  gameBoard[index] = mark;
+// Game Controller Module
+const GameController = (() => {
+  const playerX = Player('Player X', 'X');
+  const playerO = Player('Player O', 'O');
+  let currentPlayer = playerX;
 
-  // Toggle turn
-  xTurn = !xTurn;
-}
+  const cells = document.querySelectorAll('[data-cell]');
+  const restartBtn = document.getElementById('restartButton');
 
-function restartGame() {
-  gameBoard.fill(null);
-  cells.forEach(cell => {
-    cell.textContent = '';
-    cell.classList.remove('x', 'o');
-  });
-  xTurn = true;
-}
+  const startGame = () => {
+    cells.forEach((cell, index) => {
+      cell.textContent = '';
+      cell.classList.remove('x', 'o');
+      cell.addEventListener('click', () => handleTurn(cell, index), { once: true });
+    });
+    Gameboard.reset();
+    currentPlayer = playerX;
+  };
 
-// Attach event listeners
-cells.forEach(cell => cell.addEventListener('click', handleClick));
-restartBtn.addEventListener('click', restartGame);
+  const handleTurn = (cell, index) => {
+    if (Gameboard.setCell(index, currentPlayer.mark)) {
+      cell.textContent = currentPlayer.mark;
+      cell.classList.add(currentPlayer.mark.toLowerCase());
+
+      if (checkWin(currentPlayer.mark)) {
+        setTimeout(() => alert(`${currentPlayer.name} wins!`), 100);
+        return;
+      }
+
+      if (isDraw()) {
+        setTimeout(() => alert("It's a draw!"), 100);
+        return;
+      }
+
+      currentPlayer = currentPlayer === playerX ? playerO : playerX;
+    }
+  };
+
+  const checkWin = (mark) => {
+    const b = Gameboard.getBoard();
+    const winCombos = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+      [0, 3, 6], [1, 4, 7], [2, 5, 8], // cols
+      [0, 4, 8], [2, 4, 6]             // diagonals
+    ];
+    return winCombos.some(combo => combo.every(i => b[i] === mark));
+  };
+
+  const isDraw = () => {
+    return Gameboard.getBoard().every(cell => cell !== null);
+  };
+
+  restartBtn.addEventListener('click', startGame);
+
+  return { startGame };
+})();
+
+// Start the game when script loads
+GameController.startGame();
