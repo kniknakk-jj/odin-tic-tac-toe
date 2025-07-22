@@ -18,26 +18,61 @@ const GameController = (() => {
   let playerX = Player("Player X", "X");
   let playerO = Player("Player O", "O");
   let currentPlayer = playerX;
+  let scores = { x: 0, o: 0, draw: 0 };
 
-  const cells = document.querySelectorAll('[data-cell]');
+  const boardElement = document.getElementById('board');
   const restartBtn = document.getElementById('restartButton');
-  const setNamesBtn = document.getElementById('setNamesButton');
   const nameForm = document.getElementById('nameForm');
-  const confirmNames = document.getElementById('confirmNames');
-  const statusDiv = document.getElementById('gameStatus');
+  const statusDiv = document.getElementById('gameStatus') || createStatusDiv();
+  const scoreXElement = document.getElementById('scoreX');
+  const scoreOElement = document.getElementById('scoreO');
+  const scoreDrawElement = document.getElementById('scoreDraw');
+
+  let cells = [];
+
+  function createStatusDiv() {
+    const status = document.createElement('div');
+    status.id = 'gameStatus';
+    status.style.marginBottom = '10px';
+    status.style.fontWeight = 'bold';
+    status.style.color = '#333';
+    boardElement.parentNode.insertBefore(status, boardElement);
+    return status;
+  }
+
+  function createCells() {
+    boardElement.innerHTML = '';
+    cells = [];
+    for (let i = 0; i < 9; i++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      cell.setAttribute('data-cell', '');
+      boardElement.appendChild(cell);
+      cells.push(cell);
+    }
+  }
 
   const updateStatus = () => {
     statusDiv.textContent = `Current Turn: ${currentPlayer.name}`;
   };
 
+  const updateScoreboard = () => {
+    scoreXElement.textContent = `❌ ${playerX.name}: ${scores.x}`;
+    scoreOElement.textContent = `🟢 ${playerO.name}: ${scores.o}`;
+    scoreDrawElement.textContent = `➖ Draws: ${scores.draw}`;
+  };
+
   const startGame = () => {
     Gameboard.reset();
+    createCells();
     cells.forEach((cell, index) => {
       cell.textContent = '';
       cell.classList.remove('x', 'o');
       cell.addEventListener('click', () => handleTurn(cell, index), { once: true });
     });
+    statusDiv.classList.remove('win', 'draw');
     updateStatus();
+    updateScoreboard();
   };
 
   const handleTurn = (cell, index) => {
@@ -46,12 +81,20 @@ const GameController = (() => {
       cell.classList.add(currentPlayer.mark.toLowerCase());
 
       if (checkWin(currentPlayer.mark)) {
+        scores[currentPlayer.mark.toLowerCase()]++;
         statusDiv.textContent = `${currentPlayer.name} wins!`;
+        statusDiv.classList.add('win');
+        updateScoreboard();
+        setTimeout(startGame, 5000); // Restart after 5 seconds
         return;
       }
 
       if (isDraw()) {
+        scores.draw++;
         statusDiv.textContent = "It's a draw!";
+        statusDiv.classList.add('draw');
+        updateScoreboard();
+        setTimeout(startGame, 2000); // Restart after 2 seconds
         return;
       }
 
@@ -72,17 +115,14 @@ const GameController = (() => {
 
   const isDraw = () => Gameboard.getBoard().every(cell => cell !== null);
 
-  setNamesBtn.addEventListener('click', () => {
-    nameForm.classList.toggle('hidden');
-  });
-
-  confirmNames.addEventListener('click', () => {
-    const nameX = document.getElementById('playerXName').value || 'Player X';
-    const nameO = document.getElementById('playerOName').value || 'Player O';
+  nameForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nameX = document.getElementById('playerXName').value.trim() || 'Player X';
+    const nameO = document.getElementById('playerOName').value.trim() || 'Player O';
     playerX = Player(nameX, 'X');
     playerO = Player(nameO, 'O');
     currentPlayer = playerX;
-    nameForm.classList.add('hidden');
+    scores = { x: 0, o: 0, draw: 0 }; // Reset scores on new game
     startGame();
   });
 
@@ -94,4 +134,6 @@ const GameController = (() => {
   return { startGame };
 })();
 
-Game
+document.addEventListener('DOMContentLoaded', () => {
+  GameController.startGame();
+});

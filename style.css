@@ -10,12 +10,11 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  height: 100vh;
 }
 
 .container {
   text-align: center;
-  padding: 20px;
 }
 
 h1 {
@@ -23,33 +22,12 @@ h1 {
   color: #333;
 }
 
-#nameForm {
+.game-wrapper {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  gap: 40px;
   margin-bottom: 20px;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-#nameForm input {
-  padding: 10px;
-  font-size: 1rem;
-  width: 140px;
-}
-
-#nameForm button {
-  padding: 10px 15px;
-  font-size: 1rem;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-#nameForm button:hover {
-  background-color: #218838;
 }
 
 .board {
@@ -57,8 +35,6 @@ h1 {
   grid-template-columns: repeat(3, 100px);
   grid-template-rows: repeat(3, 100px);
   gap: 5px;
-  margin-bottom: 20px;
-  justify-content: center;
 }
 
 .cell {
@@ -69,14 +45,16 @@ h1 {
   align-items: center;
   font-size: 2.5rem;
   cursor: pointer;
-  transition: background 0.3s ease, color 0.3s ease;
+  transition: background 0.3s, color 0.3s;
 }
 
+/* When marked with X */
 .cell.x {
   background-color: #2196f3; /* blue */
   color: white;
 }
 
+/* When marked with O */
 .cell.o {
   background-color: #4caf50; /* green */
   color: white;
@@ -86,7 +64,7 @@ h1 {
   background: #e0e0e0;
 }
 
-#restartButton {
+button#restartButton {
   padding: 10px 20px;
   font-size: 1rem;
   background-color: #0077cc;
@@ -96,10 +74,48 @@ h1 {
   cursor: pointer;
 }
 
-#restartButton:hover {
+button#restartButton:hover {
   background-color: #005fa3;
 }
 
-.hidden {
-  display: none;
+#nameForm {
+  margin-bottom: 20px;
+}
+
+#nameForm input {
+  padding: 5px;
+  margin: 0 5px;
+  font-size: 1rem;
+}
+
+#nameForm button {
+  padding: 5px 10px;
+  font-size: 1rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.scoreboard {
+  background-color: #fff;
+  padding: 15px 25px;
+  border: 2px solid #333;
+  border-radius: 10px;
+  min-width: 180px;
+  text-align: left;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.scoreboard h2 {
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.score {
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: #444;
 }
