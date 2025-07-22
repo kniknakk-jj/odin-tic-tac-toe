@@ -85,7 +85,7 @@ const GameController = (() => {
         statusDiv.textContent = `${currentPlayer.name} wins!`;
         statusDiv.classList.add('win');
         updateScoreboard();
-        setTimeout(startGame, 5000); // Restart after 5 seconds
+        setTimeout(startGame, 2000); // Restart after 5 seconds
         return;
       }
 
