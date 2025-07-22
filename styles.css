@@ -70,3 +70,27 @@ button#restartButton {
 button#restartButton:hover {
   background-color: #005fa3;
 }
+
+.hidden {
+  display: none;
+}
+
+#nameForm {
+  margin-bottom: 20px;
+}
+
+#nameForm input {
+  padding: 5px;
+  margin: 0 5px;
+  font-size: 1rem;
+}
+
+#nameForm button {
+  padding: 5px 10px;
+  font-size: 1rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
